@@ -1,19 +1,30 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  // Basic RBAC: single role field with sensible default
-  role: text("role").default("user").notNull(),
+  role: text("role", { enum: ["worker", "employer", "admin"] }).default("worker").notNull(),
   emailVerified: integer("email_verified", { mode: "boolean" })
     .default(false)
     .notNull(),
   image: text("image"),
-  // Ban management fields
   banned: integer("banned", { mode: "boolean" }).default(false).notNull(),
   banReason: text("ban_reason"),
   banExpires: integer("ban_expires", { mode: "timestamp" }),
+  phone: text("phone"),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  address: text("address"),
+  reliabilityScore: real("reliability_score").default(100),
+  totalEarnings: real("total_earnings").default(0),
+  completedShifts: integer("completed_shifts").default(0),
+  totalApprovedShifts: integer("total_approved_shifts").default(0),
+  skills: text("skills"),
+  industry: text("industry"),
+  companyName: text("company_name"),
+  notificationRadius: real("notification_radius").default(10),
+  notificationsEnabled: integer("notifications_enabled", { mode: "boolean" }).default(true).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .defaultNow()
     .notNull(),

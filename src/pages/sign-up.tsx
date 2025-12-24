@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth";
 import { z } from "zod/v4";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -24,6 +24,8 @@ const formSchema = z.object({
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get("role") || "worker";
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>();
@@ -38,17 +40,14 @@ export default function SignUp() {
         password: data.password,
       });
       
-      // Check if the result contains an error
       if (result.error) {
         setError(result.error.message || "Sign up failed");
         return;
       }
       
-      // Only redirect if there's no error
-      navigate("/");
+      navigate(`/onboarding?role=${role}`);
     } catch (e: any) {
       console.error("Sign up failed:", e);
-      // Handle different error formats
       if (e?.code && e?.message) {
         setError(`${e.code}: ${e.message}`);
       } else if (e?.message) {
